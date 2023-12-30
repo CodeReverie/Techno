@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TMPro;
 using Photon.Pun;
@@ -9,16 +10,18 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 {   //General Variables 
     public TextMeshProUGUI[] numberTexts;
     public TextMeshProUGUI[] voteTexts;
-    public GameObject rolePanel;
-    public TextMeshProUGUI roleTextElement;
+    public GameObject rolePanel,seerPanel;
+    public TextMeshProUGUI roleTextElement,seerText;
    
     private int[] counters;
     private PhotonView view;
     private PlayerDevice currentPlayerDevice;
     private Dictionary<int, int> playerButtonMap; // Map player IDs to button indices
     private Button[] playerButtons; // Array of player buttons
+    private Button[] voteButtons; // Array of vote buttons
     
     private int[] votecounters;
+    private bool[] wormCountersPlaced;
     
     //timer
     public float timeRemaining = 120;
@@ -28,6 +31,8 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     public bool nightPhase = true;
     public bool gameIsRunning = true;
     public string roleEquivalent;
+    public int voteRemaining = 1;
+    public bool firstNightPhase = true;
 
 
 
@@ -53,13 +58,17 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         timeIsRunning = true;
         nightPhase = false;
         timeRemaining = 5; 
+        firstNightPhase = true; 
 
         view = GetComponent<PhotonView>();
         counters = new int[numberTexts.Length];
         votecounters = new int[voteTexts.Length];
+        wormCountersPlaced = new bool[numberTexts.Length];
+
         playerButtonMap = new Dictionary<int, int>();
         playerButtons = new Button[numberTexts.Length];
-        playerButtons = new Button[voteTexts.Length];
+        voteButtons = new Button[voteTexts.Length];
+       
 
         // Life Counters
         List<int> availableButtonIndices = new List<int>();
@@ -71,13 +80,15 @@ public class AATrialButton : MonoBehaviourPunCallbacks
             playerButtons[i] = GetComponent<Button>(); // Assuming your buttons are on the same GameObject
         }
         //vote counters
+        voteButtons = new Button[voteTexts.Length];
         for (int i = 0; i < voteTexts.Length; i++)
         {
             availableButtonIndices.Add(i);
             votecounters[i] = 1;
             voteTexts[i].text = votecounters[i].ToString();
-            playerButtons[i] = GetComponent<Button>(); // Assuming your buttons are on the same GameObject
+            voteButtons[i] = playerButtons[i];
         }
+
         //Number of Players with buttons of course 
         for (int i = 1; i <= 12; i++)
         {
@@ -119,50 +130,49 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
           
             switch (roleText){
-            case "1" :
+            case "0" :
                 roleEquivalent = "Virus";
                 break;
-            case "2" :
+            case "1" :
               roleEquivalent = "Firewall";
                 break;
-            case "3" :
+            case "2" :
             
                roleEquivalent = "Backup FIle";
                 break;
-            case "4" :
+            case "3" :
             
                roleEquivalent = "Database";
                 break;
-            case "5" :
+            case "4" :
             
                 roleEquivalent = "Quarantine Manager";
                 break;
-            case "6" :
+            case "5" :
             
               roleEquivalent = "Network Monitor";
                 break;
+            case "6" :
+            
+              roleEquivalent = "Database";
+                break;
             case "7" :
+            
             
               roleEquivalent = "Database";
                 break;
             case "8" :
             
-            
-              roleEquivalent = "Database";
+                roleEquivalent = "Database";
                 break;
             case "9" :
-            
-                roleEquivalent = "Database";
+                roleEquivalent = "Phishing";
                 break;
             case "10" :
             
-               roleEquivalent = "Database";
-                break;
-            case "11" :
-            
                roleEquivalent =  "Worm";
                 break;
-            case "12" :
+            case "11" :
             
                 roleEquivalent =  "Spyware";
                 break;
@@ -231,14 +241,48 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         timeRemaining = 0;
         DisplayTime(timeRemaining);
         PhaseText.text = newPhase;
+        voteRemaining = 1;
 
         if (newPhase == "Day Phase")
         {
             timeRemaining = 5;
+            voteRemaining = 2;
+            // Reset vote counts to 0 at the beginning of each day phase
+            for (int i = 0; i < votecounters.Length; i++)
+            {
+            votecounters[i] = 1;
+            
+            view.RPC("UpdateVoteCount", RpcTarget.All, i, 1);
+            }
+
+
+
         }
         else if (newPhase == "Night Phase")
         {
             timeRemaining = 5;
+            if (PhotonNetwork.IsConnected && view.IsMine)
+            {
+            int playerToEliminate = GetPlayerWithHighestVotes();
+            
+            if (playerToEliminate != -1)
+            {
+
+                if (firstNightPhase){
+                    Debug.Log("First Voting Phase - No player eliminated");
+                }
+                // Reduce the life of the player with the highest votes to 0
+                else{
+                    counters[playerButtonMap[playerToEliminate]] -= 10;
+
+                    // Notify all players about the life reduction
+                    view.RPC("UpdateCount", RpcTarget.All, playerButtonMap[playerToEliminate], 0);
+                }
+                firstNightPhase = false; 
+            }
+            }
+            
+
         }
 
         nightPhase = !nightPhase; // Switch the phase
@@ -261,7 +305,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
              }
             case PlayerDevice.Phone2:
              if (nightPhase){
-                return counters[buttonIndex] == 1; // Player 2 can only increase counter if it's > 0
+                return counters[buttonIndex] == 1; // Player 2 can only increase counter if it's =1
                  }
              else {
                 return votecounters[buttonIndex] > 0;
@@ -289,7 +333,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
              }
             case PlayerDevice.Phone6:
              if (nightPhase){
-                return counters[buttonIndex] == 1; // Player 6 can reveal player's role
+                return counters[buttonIndex] >0; // Player 6 can reveal player's role
                  }
              else {
                 return votecounters[buttonIndex] > 0;
@@ -351,22 +395,24 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                 switch (currentPlayerDevice)
                 {
                     case PlayerDevice.Phone1:
-                        // WEREWOLF FT. THREAT
+                        // WEREWOLF FT. VIRUS
                         counters[buttonIndex]--;
                         break;
                     case PlayerDevice.Phone2:
                         // BODYGUARD FT. FIREWALL
                         counters[buttonIndex]++;
                         break;
+                        
                     case PlayerDevice.Phone3:
                         // MEDIC FT. BACKUPFILE
                         counters[buttonIndex]++;
                         break;
-                    case PlayerDevice.Phone4:
-                        // ??????
-                        // For now, let's just increase the counter
+                    /*case PlayerDevice.Phone4:
+                        // VILLAGER FT. DATABASE
                         counters[buttonIndex]++;
                         break;
+                    */
+                
                     case PlayerDevice.Phone5:
                         //  JAILER FT. QUARANTINE MANAGER
                         // Determine the player ID associated with the pressed button
@@ -377,23 +423,68 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                         break;
                     case PlayerDevice.Phone6:
                         // SEER FT. Network Monitoring TOOL
-                        // Implement logic to see other players and perform action here
-                        counters[buttonIndex]++;
+
+                        int displayID = AcquireID(buttonIndex);
+                        ShowPlayerIDPanel(displayID); 
                         break;
-                     case PlayerDevice.Phone7:
+
+                    /*case PlayerDevice.Phone7:
                         // VILLAGER FT. DATABASE
                         counters[buttonIndex]++;
-                        break;
-                    case PlayerDevice.Phone8:
+                        break;*/
+
+                    /* case PlayerDevice.Phone8:
                         //
                         // Implement logic to see other players and perform action here
                         counters[buttonIndex]++;
-                        break;
-                    case PlayerDevice.Phone9:
+                        break;*/
+
+                    /*case PlayerDevice.Phone9:
                         //Virus
                         // Implement logic to see other players and perform action here
                         counters[buttonIndex]--;
-                        break;          
+                        break;*/    
+                    /*case PlayerDevice.Phone10:
+                        //Jester FT. Phishing
+                    break;*/
+
+                    case PlayerDevice.Phone11:
+                            //Douser FT. WORM 
+                        int targetPlayerIndex = buttonIndex;
+                        // Check if Player 11 has already placed a counter on the target player
+                        if (!wormCountersPlaced[targetPlayerIndex])
+                            {
+                            counters[targetPlayerIndex]++;
+                            wormCountersPlaced[targetPlayerIndex] = true;
+
+                            // Update UI and notify other players
+                            view.RPC("UpdateCount", RpcTarget.All, targetPlayerIndex, counters[targetPlayerIndex]);
+
+                            // Check if Player 11 has placed a counter on every player with life left
+                            if (wormCountersPlaced.All(x => x))
+                            {
+                                // Player 11 wins, handle victory condition here
+                                Debug.Log("Player 11 (Worm) has won!");
+                            }
+                        }
+                    else
+                    {
+                        // Player 11 has already placed a counter on this player
+                        Debug.Log("Player 11 (Worm) has already placed a counter on this player.");
+                    }
+                    
+                    break;
+
+                
+
+                    case PlayerDevice.Phone12:
+                            //Seer Wolf FT. SPYWARE
+                            displayID = AcquireID(buttonIndex);
+                            ShowPlayerIDPanel(displayID); 
+                    break;
+
+
+
                 }
                 view.RPC("UpdateCount", RpcTarget.All, buttonIndex, counters[buttonIndex]);
             }
@@ -403,32 +494,77 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                 switch (currentPlayerDevice)
                 {
                     case PlayerDevice.Phone1:
+                        if (voteRemaining>=0){
                         votecounters[buttonIndex]++;
+                        voteRemaining--;
+                        }
                         break;
                     case PlayerDevice.Phone2:
+                        if (voteRemaining>=0){
                         votecounters[buttonIndex]++;
+                         voteRemaining--;
+                        }
                         break;
                     case PlayerDevice.Phone3:
+                        if (voteRemaining>=0){
                         votecounters[buttonIndex]++;
+                         voteRemaining--;
+                        }
                         break;
                     case PlayerDevice.Phone4:
+                       if (voteRemaining>=0){
                         votecounters[buttonIndex]++;
+                         voteRemaining--;
+                        }
                         break;
                     case PlayerDevice.Phone5:
+                        if (voteRemaining>0){
                         votecounters[buttonIndex]++;
+                         voteRemaining--;
+                        }
                         break;
                     case PlayerDevice.Phone6:
+                        if (voteRemaining>=0){
                         votecounters[buttonIndex]++;
+                         voteRemaining--;
+                        }
                         break;
                      case PlayerDevice.Phone7:
+                      if (voteRemaining>=0){
                         votecounters[buttonIndex]++;
+                         voteRemaining--;
+                        }
                         break;
                     case PlayerDevice.Phone8:
+                        if (voteRemaining>=0){
                         votecounters[buttonIndex]++;
+                         voteRemaining--;
+                        }
                         break;
                     case PlayerDevice.Phone9:
+                        if (voteRemaining>=0){
                         votecounters[buttonIndex]++;
-                        break;          
+                         voteRemaining--;
+                        }
+                        break;   
+                    case PlayerDevice.Phone10:
+                        if (voteRemaining>=0){
+                        votecounters[buttonIndex]++;
+                         voteRemaining--;
+                        }
+                        break;
+                    case PlayerDevice.Phone11:
+                        if (voteRemaining>=0){
+                        votecounters[buttonIndex]++;
+                         voteRemaining--;
+                        }
+                        break;  
+                    case PlayerDevice.Phone12:
+                        if (voteRemaining>=0){
+                        votecounters[buttonIndex]++;
+                         voteRemaining--;
+                        }
+                        break;        
                 }
                 view.RPC("UpdateVoteCount", RpcTarget.All, buttonIndex, votecounters[buttonIndex]);
             }
@@ -450,8 +586,32 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         counters[buttonIndex] = newCounter;
         numberTexts[buttonIndex].text = newCounter.ToString();
     }
-  
 
+
+    //codes for VotingElimination
+    private int GetPlayerWithHighestVotes()
+    {
+    int maxVotes = -1;
+    int playerWithHighestVotes = -1;
+
+    for (int i = 0; i < votecounters.Length; i++)
+    {
+        if (votecounters[i] > maxVotes)
+        {
+            maxVotes = votecounters[i];
+            playerWithHighestVotes = GetPlayerIdForButton(i);
+        }
+    }
+    
+    if (playerWithHighestVotes == 10 && roleEquivalent == "Phishing")
+    {
+        Debug.Log("Player 10 (Phishing) has won!");
+        // You may want to handle the victory condition here
+    }
+
+
+    return playerWithHighestVotes;
+    }
 
 
     //Codes for Quarantine Manager
@@ -478,6 +638,22 @@ public class AATrialButton : MonoBehaviourPunCallbacks
             }
         }
     }
+    //method to show player ID
+    private void ShowPlayerIDPanel(int displayID){
+        seerPanel.SetActive(true);
+        seerText.text = "Player Role ID: " + displayID;
+        StartCoroutine(HidePlayerIDPanel(seerPanel));
+    }
+
+    private IEnumerator HidePlayerIDPanel(GameObject seerPanel)
+    {
+    yield return new WaitForSeconds(5f); // Adjust the delay as needed
+    seerPanel.SetActive(false);
+    }
+
+
+
+
 
     // method to get the player ID associated with a button index
     private int GetPlayerIdForButton(int buttonIndex)
@@ -492,8 +668,20 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
         return -1; // Return -1 if the button index is not found 
     }
+    private int AcquireID(int buttonIndex)
+    {
+        foreach (var kvp in playerButtonMap)
+        {
+            if (kvp.Value == buttonIndex)
+            {
+                return kvp.Key;
+            }
+        }
 
-// Roles Assignment Transition Screen 
+        return -1; // Return -1 if the button index is not found 
+    }
+
+
 
 
 }
