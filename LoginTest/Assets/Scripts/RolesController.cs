@@ -5,17 +5,20 @@ using UnityEngine.UI;
 using TMPro;
 public class RolesController : MonoBehaviour
 {
-     public GameObject Panel,PanelFW, PanelAV, PanelDB, PanelQM, PanelNMT, PanelRAT;
+     public GameObject Panel, PanelFW, PanelAV, PanelBD, PanelQM, PanelNMT, PanelVirus, PanelPhishing, PanelSpyware, PanelDatabase;
 
       public void OpenOptions()
     {
         Panel.SetActive(true);
         PanelFW.SetActive(false);
         PanelAV.SetActive(false);
-        PanelDB.SetActive(false);
+        PanelBD.SetActive(false);
         PanelQM.SetActive(false);
         PanelNMT.SetActive(false);
-        PanelRAT.SetActive(false);
+        PanelVirus.SetActive(false);
+        PanelPhishing.SetActive(false);
+        PanelSpyware.SetActive(false);
+        PanelDatabase.SetActive(false);
 
     }
      public void OpenPanelFW()
@@ -23,10 +26,13 @@ public class RolesController : MonoBehaviour
         Panel.SetActive(false);
         PanelFW.SetActive(true);
         PanelAV.SetActive(false);
-        PanelDB.SetActive(false);
+        PanelBD.SetActive(false);
         PanelQM.SetActive(false);
         PanelNMT.SetActive(false);
-        PanelRAT.SetActive(false);
+        PanelVirus.SetActive(false);
+        PanelPhishing.SetActive(false);
+        PanelSpyware.SetActive(false);
+        PanelDatabase.SetActive(false);
 
     }
      public void OpenPanelAV()
@@ -34,21 +40,27 @@ public class RolesController : MonoBehaviour
         Panel.SetActive(false);
         PanelFW.SetActive(false);
         PanelAV.SetActive(true);
-        PanelDB.SetActive(false);
+        PanelBD.SetActive(false);
         PanelQM.SetActive(false);
         PanelNMT.SetActive(false);
-        PanelRAT.SetActive(false);
+        PanelVirus.SetActive(false);
+        PanelPhishing.SetActive(false);
+        PanelSpyware.SetActive(false);
+        PanelDatabase.SetActive(false);
 
     }
-     public void OpenPanelDB()
+     public void OpenPanelBD()
     {
         Panel.SetActive(false);
         PanelFW.SetActive(false);
         PanelAV.SetActive(false);
-        PanelDB.SetActive(true);
+        PanelBD.SetActive(true);
         PanelQM.SetActive(false);
         PanelNMT.SetActive(false);
-        PanelRAT.SetActive(false);
+        PanelVirus.SetActive(false);
+        PanelPhishing.SetActive(false);
+        PanelSpyware.SetActive(false);
+        PanelDatabase.SetActive(false);
 
     }
      public void OpenPanelQM()
@@ -56,10 +68,13 @@ public class RolesController : MonoBehaviour
         Panel.SetActive(false);
         PanelFW.SetActive(false);
         PanelAV.SetActive(false);
-        PanelDB.SetActive(false);
+        PanelBD.SetActive(false);
         PanelQM.SetActive(true);
         PanelNMT.SetActive(false);
-        PanelRAT.SetActive(false);
+        PanelVirus.SetActive(false);
+        PanelPhishing.SetActive(false);
+        PanelSpyware.SetActive(false);
+        PanelDatabase.SetActive(false);
 
     }
      public void OpenPanelNMT()
@@ -67,22 +82,66 @@ public class RolesController : MonoBehaviour
         Panel.SetActive(false);
         PanelFW.SetActive(false);
         PanelAV.SetActive(false);
-        PanelDB.SetActive(false);
+        PanelBD.SetActive(false);
         PanelQM.SetActive(false);
         PanelNMT.SetActive(true);
-        PanelRAT.SetActive(false);
+        PanelVirus.SetActive(false);
+        PanelPhishing.SetActive(false);
+        PanelSpyware.SetActive(false);
+        PanelDatabase.SetActive(false);
 
     }
-     public void OpenPanelRAT()
+     public void OpenPanelVirus()
     {
         Panel.SetActive(false);
         PanelFW.SetActive(false);
         PanelAV.SetActive(false);
-        PanelDB.SetActive(false);
+        PanelBD.SetActive(false);
         PanelQM.SetActive(false);
         PanelNMT.SetActive(false);
-        PanelRAT.SetActive(true);
-
+        PanelVirus.SetActive(true);
+        PanelPhishing.SetActive(false);
+        PanelSpyware.SetActive(false);
+        PanelDatabase.SetActive(false);
+    }
+        public void OpenPanelPhishing()
+    {
+        Panel.SetActive(false);
+        PanelFW.SetActive(false);
+        PanelAV.SetActive(false);
+        PanelBD.SetActive(false);
+        PanelQM.SetActive(false);
+        PanelNMT.SetActive(false);
+        PanelVirus.SetActive(false);
+        PanelPhishing.SetActive(true);
+        PanelSpyware.SetActive(false);
+        PanelDatabase.SetActive(false);
+    }
+        public void OpenPanelSpyware()
+    {
+        Panel.SetActive(false);
+        PanelFW.SetActive(false);
+        PanelAV.SetActive(false);
+        PanelBD.SetActive(false);
+        PanelQM.SetActive(false);
+        PanelNMT.SetActive(false);
+        PanelVirus.SetActive(false);
+        PanelPhishing.SetActive(false);
+        PanelSpyware.SetActive(true);
+        PanelDatabase.SetActive(false);
+    }
+        public void OpenPanelDatabase()
+    {
+        Panel.SetActive(false);
+        PanelFW.SetActive(false);
+        PanelAV.SetActive(false);
+        PanelBD.SetActive(false);
+        PanelQM.SetActive(false);
+        PanelNMT.SetActive(false);
+        PanelVirus.SetActive(false);
+        PanelPhishing.SetActive(false);
+        PanelSpyware.SetActive(false);
+        PanelDatabase.SetActive(true);
     }
     
 }
