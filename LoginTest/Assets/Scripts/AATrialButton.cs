@@ -20,8 +20,10 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     private Button[] playerButtons; // Array of player buttons
     private Button[] voteButtons; // Array of vote buttons
     
+    
     private int[] votecounters;
-    private bool[] wormCountersPlaced;
+    //private int wormTargetPlayer = -1;
+    
     
     //timer
     public float timeRemaining = 120;
@@ -47,9 +49,9 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         Phone7,
         Phone8,
         Phone9,
-        Phone10,
+        /*Phone10,
         Phone11,
-        Phone12
+        Phone12*/
     }
     
     void Start()
@@ -63,7 +65,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         view = GetComponent<PhotonView>();
         counters = new int[numberTexts.Length];
         votecounters = new int[voteTexts.Length];
-        wormCountersPlaced = new bool[numberTexts.Length];
+      
 
         playerButtonMap = new Dictionary<int, int>();
         playerButtons = new Button[numberTexts.Length];
@@ -130,50 +132,42 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
           
             switch (roleText){
+          
             case "0" :
-                roleEquivalent = "Virus";
-                break;
-            case "1" :
               roleEquivalent = "Firewall";
                 break;
-            case "2" :
+            case "1" :
             
                roleEquivalent = "Backup FIle";
                 break;
-            case "3" :
-            
-               roleEquivalent = "Database";
-                break;
-            case "4" :
-            
-                roleEquivalent = "Quarantine Manager";
-                break;
-            case "5" :
+                     
+            case "2" :
             
               roleEquivalent = "Network Monitor";
                 break;
-            case "6" :
+            case "3" :
             
               roleEquivalent = "Database";
                 break;
-            case "7" :
+            case "4" :
             
             
               roleEquivalent = "Database";
                 break;
-            case "8" :
+            case "5" :
             
                 roleEquivalent = "Database";
                 break;
-            case "9" :
+
+            case "6" :
+                roleEquivalent = "Virus";
+                break;
+
+            case "7" :
                 roleEquivalent = "Phishing";
                 break;
-            case "10" :
-            
-               roleEquivalent =  "Worm";
-                break;
-            case "11" :
-            
+
+            case "8" :
                 roleEquivalent =  "Spyware";
                 break;
                 }
@@ -254,8 +248,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
             
             view.RPC("UpdateVoteCount", RpcTarget.All, i, 1);
             }
-
-
+             //ResetDisabledPlayers();
 
         }
         else if (newPhase == "Night Phase")
@@ -280,6 +273,11 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                 }
                 firstNightPhase = false; 
             }
+                /*if (CheckWormVictory())
+                {
+                    Debug.Log("Player 11 (Worm) has won!");
+                    // Handle Worm's victory here
+                }*/
             }
             
 
@@ -359,7 +357,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
              else {
                 return votecounters[buttonIndex] > 0;
              }
-            case PlayerDevice.Phone10:
+            /*case PlayerDevice.Phone10:
              if (nightPhase){
                 return counters[buttonIndex] == 1; // Player 10 Villager
                  }
@@ -379,7 +377,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
              }
              else {
                 return votecounters[buttonIndex] > 0;
-             }
+             }*/
             default:
                 return false;     
         }
@@ -395,94 +393,68 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                 switch (currentPlayerDevice)
                 {
                     case PlayerDevice.Phone1:
-                        // WEREWOLF FT. VIRUS
-                        counters[buttonIndex]--;
+                        // BODYGUARD FT. FIREWALL
+                        counters[buttonIndex]++;
                         break;
                     case PlayerDevice.Phone2:
-                        // BODYGUARD FT. FIREWALL
+                        // MEDIC FT. BACKUPFILE
                         counters[buttonIndex]++;
                         break;
                         
                     case PlayerDevice.Phone3:
-                        // MEDIC FT. BACKUPFILE
-                        counters[buttonIndex]++;
-                        break;
-                    /*case PlayerDevice.Phone4:
-                        // VILLAGER FT. DATABASE
-                        counters[buttonIndex]++;
-                        break;
-                    */
-                
-                    case PlayerDevice.Phone5:
-                        //  JAILER FT. QUARANTINE MANAGER
-                        // Determine the player ID associated with the pressed button
-                        int playerIdToDisable = GetPlayerIdForButton(buttonIndex);
-                        // Disable the button for the associated player
-                        DisableButton(playerIdToDisable);
-                        counters[buttonIndex]= -5;
-                        break;
-                    case PlayerDevice.Phone6:
                         // SEER FT. Network Monitoring TOOL
 
                         int displayID = AcquireID(buttonIndex);
                         ShowPlayerIDPanel(displayID); 
                         break;
-
-                    /*case PlayerDevice.Phone7:
-                        // VILLAGER FT. DATABASE
+                    /*VILLAGERS FT. DATABASES
+                    case PlayerDevice.Phone4:
+                        break;
+                    case PlayerDevice.Phone5: 
+                        break;
+                    case PlayerDevice.Phone6:
+                        break;
+                    */
+                   /*  JESTER FT. PHISHING
+                    case PlayerDevice.Phone7:
+                        JESTER FT. PHISHING
                         counters[buttonIndex]++;
-                        break;*/
+                        break;
+                    */
 
-                    /* case PlayerDevice.Phone8:
-                        //
-                        // Implement logic to see other players and perform action here
-                        counters[buttonIndex]++;
-                        break;*/
-
-                    /*case PlayerDevice.Phone9:
-                        //Virus
-                        // Implement logic to see other players and perform action here
+                    case PlayerDevice.Phone8:
+                       // WEREWOLF FT. VIRUS
                         counters[buttonIndex]--;
-                        break;*/    
-                    /*case PlayerDevice.Phone10:
-                        //Jester FT. Phishing
-                    break;*/
+                        break;
 
+                    case PlayerDevice.Phone9:
+                        //Seer Wolf FT. SPYWARE
+                        displayID = AcquireID(buttonIndex);
+                        ShowPlayerIDPanel(displayID); 
+                        break;
+
+                    /*case PlayerDevice.Phone10:
+                       // JAILER FT. QUARANTINE MANAGER
+                        // Determine the player ID associated with the pressed button
+                        int playerIdToDisable = GetPlayerIdForButton(buttonIndex);
+                        // Disable the button for the associated player
+                        DisableButton(playerIdToDisable);
+                        counters[buttonIndex]= -5;
+                    break;
                     case PlayerDevice.Phone11:
                             //Douser FT. WORM 
-                        int targetPlayerIndex = buttonIndex;
-                        // Check if Player 11 has already placed a counter on the target player
-                        if (!wormCountersPlaced[targetPlayerIndex])
+                        if (wormTargetPlayer == -1)
                             {
-                            counters[targetPlayerIndex]++;
-                            wormCountersPlaced[targetPlayerIndex] = true;
-
-                            // Update UI and notify other players
-                            view.RPC("UpdateCount", RpcTarget.All, targetPlayerIndex, counters[targetPlayerIndex]);
-
-                            // Check if Player 11 has placed a counter on every player with life left
-                            if (wormCountersPlaced.All(x => x))
-                            {
-                                // Player 11 wins, handle victory condition here
-                                Debug.Log("Player 11 (Worm) has won!");
+                                wormTargetPlayer = GetPlayerIdForButton(buttonIndex);
+                                // Place the counter for the selected player
+                                counters[buttonIndex]++;
+                                // Notify all players about the life increase
+                                view.RPC("UpdateCount", RpcTarget.All, buttonIndex, counters[buttonIndex]);
                             }
-                        }
-                    else
-                    {
-                        // Player 11 has already placed a counter on this player
-                        Debug.Log("Player 11 (Worm) has already placed a counter on this player.");
-                    }
-                    
                     break;
-
-                
-
                     case PlayerDevice.Phone12:
-                            //Seer Wolf FT. SPYWARE
-                            displayID = AcquireID(buttonIndex);
-                            ShowPlayerIDPanel(displayID); 
                     break;
-
+                    */
 
 
                 }
@@ -547,7 +519,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                          voteRemaining--;
                         }
                         break;   
-                    case PlayerDevice.Phone10:
+                  /*  case PlayerDevice.Phone10:
                         if (voteRemaining>=0){
                         votecounters[buttonIndex]++;
                          voteRemaining--;
@@ -564,7 +536,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                         votecounters[buttonIndex]++;
                          voteRemaining--;
                         }
-                        break;        
+                        break;  */      
                 }
                 view.RPC("UpdateVoteCount", RpcTarget.All, buttonIndex, votecounters[buttonIndex]);
             }
@@ -615,10 +587,16 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
 
     //Codes for Quarantine Manager
+/*
+    private List<int> disabledPlayers = new List<int>();
+
     private void DisableButton(int playerIdToDisable)
     {
+    // Check if the player is not already disabled
+    if (!disabledPlayers.Contains(playerIdToDisable))
+        {
         foreach (var kvp in playerButtonMap)
-        { // codes just to separate the ID and button index
+            {
             int playerID = kvp.Key;
             int buttonIndex = kvp.Value;
 
@@ -634,10 +612,21 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                 {
                     Debug.LogError($"Invalid button index for player ID {playerIdToDisable}");
                 }
+
+                // Add the disabled player to the list
+                disabledPlayers.Add(playerIdToDisable);
                 break;
+                }
             }
         }
     }
+    private void ResetDisabledPlayers()
+{
+    disabledPlayers.Clear();
+}
+*/
+
+
     //method to show player ID
     private void ShowPlayerIDPanel(int displayID){
         seerPanel.SetActive(true);
@@ -680,8 +669,30 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
         return -1; // Return -1 if the button index is not found 
     }
+    //Codes for Worm
+/*
+    private bool CheckWormVictory()
+{
+    // Check if all players who have life counters also have a Worm counter
+    foreach (var kvp in playerButtonMap)
+    {
+        int playerID = kvp.Key;
+        int buttonIndex = kvp.Value;
 
+        if (counters[buttonIndex] > 0 && playerID != 11) // Skip Worm's own counter
+        {
+            // Check if the player has a Worm counter
+            if (counters[buttonIndex] == 0)
+            {
+                return false; // Found a player without a Worm counter
+            }
+        }
+    }
 
+    // Check if the Worm has placed a counter on each player with a life counter
+    return wormTargetPlayer != -1 && counters[playerButtonMap[wormTargetPlayer]] > 0;
+}
+*/
 
 
 }
