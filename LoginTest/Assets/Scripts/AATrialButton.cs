@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using Photon.Pun;
 using UnityEngine.UI;
+//AFTER PULLING
 
 public class AATrialButton : MonoBehaviourPunCallbacks
 {   //General Variables 
@@ -56,7 +57,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         Phone6,
         Phone7,
         Phone8,
-        Phone9,
+        Phone9
         /*Phone10,
         Phone11,
         Phone12*/
