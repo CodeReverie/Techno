@@ -33,6 +33,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Status/Attacks.unity
     guid: 0bf212380191e9849b88b4b1a748e0ec
   m_configObjects:
+    com.unity.adaptiveperformance.google.android.provider_settings: {fileID: 11400000, guid: 85c51a91f55454b498d277c0123a2040, type: 2}
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: a15cafa4f983a414ca865694cfec3f01, type: 2}
     com.unity.adaptiveperformance.samsung.android.provider_settings: {fileID: 11400000, guid: 805451474641d134fa56a8619663676c, type: 2}
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 0537b92ddbcd9c24ba3e5f0ec52d8196, type: 2}
