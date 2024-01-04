@@ -5,27 +5,29 @@ using UnityEngine;
 using TMPro;
 using Photon.Pun;
 using UnityEngine.UI;
+//AFTER PULLING
 
 public class AATrialButton : MonoBehaviourPunCallbacks
 {   //General Variables 
     public TextMeshProUGUI[] numberTexts;
     public TextMeshProUGUI[] voteTexts;
     public GameObject rolePanel,seerPanel;
+    public GameObject firewallPanel, backupPanel, networkPanel, dataPanel, virusPanel, phishingPanel, spywarePanel;
     public TextMeshProUGUI roleTextElement,seerText;
    
     private int[] counters;
     private PhotonView view;
     private PlayerDevice currentPlayerDevice;
-    private Dictionary<int, int> playerButtonMap; // Map player IDs to button indices
+    private Dictionary<int, int> playerButtonMap; // Map player IDs to button 
     private Button[] playerButtons; // Array of player buttons
     private Button[] voteButtons; // Array of vote buttons
     
+
+    private int[] votecounters; 
     
-    private int[] votecounters;
-    //private int wormTargetPlayer = -1;
     
     
-    //timer
+    //timer variables
     public float timeRemaining = 120;
     public bool timeIsRunning = true;
     public TMP_Text timeText;
@@ -33,8 +35,16 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     public bool nightPhase = true;
     public bool gameIsRunning = true;
     public string roleEquivalent;
+    public string roleDescription;
     public int voteRemaining = 1;
     public bool firstNightPhase = true;
+    //once per turn and once per game
+    public int optFirewall =1;
+    public int opgBackup =1;
+    public int optMonitor =1;
+    public int optVirus =1;
+    public int optSpy =1;
+    
 
 
 
@@ -48,7 +58,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         Phone6,
         Phone7,
         Phone8,
-        Phone9,
+        Phone9
         /*Phone10,
         Phone11,
         Phone12*/
@@ -92,7 +102,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         }
 
         //Number of Players with buttons of course 
-        for (int i = 1; i <= 12; i++)
+        for (int i = 1; i <= 9; i++)
         {
             int randomButtonIndex = Random.Range(0, availableButtonIndices.Count);
             int playerID = i; // Adjust this if your player IDs don't start from 1
@@ -110,15 +120,14 @@ public class AATrialButton : MonoBehaviourPunCallbacks
             {
                 currentPlayerDevice = (PlayerDevice)playerButtonMap[actorNumber];
                 ShowRolePanel(playerButtonMap[actorNumber].ToString());
-
             }
             else
             {
                 // Handle the case where the player's button is not assigned
             }
 
-            // Check if all 6 players are in the room
-            if (PhotonNetwork.PlayerList.Length >= 12)
+            // Check if all 9 players are in the room
+            if (PhotonNetwork.PlayerList.Length >= 9)
             {
                 // Close the room
                 PhotonNetwork.CurrentRoom.IsOpen = false;
@@ -130,49 +139,57 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         //UI For ROLES Assignment 
         private void ShowRolePanel(string roleText){
 
-          
-            switch (roleText){
-          
+            switch (roleText){    
             case "0" :
               roleEquivalent = "Firewall";
+              roleDescription = "You can protect 1 player from being attacked each night";
+              OpenFirewall();
                 break;
+
             case "1" :
-            
                roleEquivalent = "Backup FIle";
+               roleDescription = "You can revive one player at night. You can only use this once";
+               OpenBackup();
                 break;
                      
             case "2" :
-            
               roleEquivalent = "Network Monitor";
+              roleDescription = "You can reveal 1 player role each night";
+              OpenNetwork();
                 break;
+
             case "3" :
-            
               roleEquivalent = "Database";
+
+              OpenData();
                 break;
+
             case "4" :
-            
-            
               roleEquivalent = "Database";
+              OpenData();
                 break;
+
             case "5" :
-            
                 roleEquivalent = "Database";
+                OpenData();
                 break;
 
             case "6" :
-                roleEquivalent = "Virus";
+                roleEquivalent = "Phishing";
+                OpenPhishing();
                 break;
 
             case "7" :
-                roleEquivalent = "Phishing";
+                roleEquivalent = "Virus";
+                OpenVirus();
                 break;
 
             case "8" :
                 roleEquivalent =  "Spyware";
+                OpenSpyware();
                 break;
                 }
-        
-      
+
              roleTextElement.text = "Your Role is: " + roleEquivalent;
              rolePanel.SetActive(true);
 
@@ -180,20 +197,12 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         }
         
         private IEnumerator HideRolePanel(GameObject rolePanel){
-                
                 yield return new WaitForSeconds(5f); // Adjust the delay as needed
                 rolePanel.SetActive(false);
-                
         }
 
 
-
-
-
-    
-    //timer
-    
-    
+    //Phasing Logics base on timer
     void Update()
     {
         if (timeIsRunning && nightPhase)
@@ -236,11 +245,20 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         DisplayTime(timeRemaining);
         PhaseText.text = newPhase;
         voteRemaining = 1;
+        
+        optFirewall =1; 
+        optMonitor =1;
+        optSpy =1;
+        optVirus =1; 
 
         if (newPhase == "Day Phase")
         {
             timeRemaining = 5;
-            voteRemaining = 2;
+            voteRemaining = 1;
+            optFirewall =1; 
+            optMonitor =1;
+            optSpy =1;
+            optVirus =1; 
             // Reset vote counts to 0 at the beginning of each day phase
             for (int i = 0; i < votecounters.Length; i++)
             {
@@ -249,8 +267,8 @@ public class AATrialButton : MonoBehaviourPunCallbacks
             view.RPC("UpdateVoteCount", RpcTarget.All, i, 1);
             }
              //ResetDisabledPlayers();
-
         }
+
         else if (newPhase == "Night Phase")
         {
             timeRemaining = 5;
@@ -267,7 +285,6 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                 // Reduce the life of the player with the highest votes to 0
                 else{
                     counters[playerButtonMap[playerToEliminate]] -= 10;
-
                     // Notify all players about the life reduction
                     view.RPC("UpdateCount", RpcTarget.All, playerButtonMap[playerToEliminate], 0);
                 }
@@ -279,8 +296,6 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                     // Handle Worm's victory here
                 }*/
             }
-            
-
         }
 
         nightPhase = !nightPhase; // Switch the phase
@@ -288,10 +303,10 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 //timer end
 
 
+
     private bool IsActionButtonEnabled(int buttonIndex)
     {
-        //Conditions to click 
-        // Logic to determine if the action button is enabled based on the current player's device
+        //Conditions to click other players
         switch (currentPlayerDevice)
         {
             case PlayerDevice.Phone1:
@@ -303,56 +318,56 @@ public class AATrialButton : MonoBehaviourPunCallbacks
              }
             case PlayerDevice.Phone2:
              if (nightPhase){
-                return counters[buttonIndex] == 1; // Player 2 can only increase counter if it's =1
+                return counters[buttonIndex] == 1; // Player 2 can only increase counter if it's = 1
                  }
              else {
                 return votecounters[buttonIndex] > 0;
              }
             case PlayerDevice.Phone3:
              if (nightPhase){
-                return counters[buttonIndex] == 0; // Player 3 can only increase if counter is 0
+                return counters[buttonIndex] > 0; // Player 3 can only see alive player's roles
                  }
              else {
                 return votecounters[buttonIndex] > 0;
              }
             case PlayerDevice.Phone4:
              if (nightPhase){
-                return counters[buttonIndex] == 1; // NO ROLE ASSIGNED YET
+                return counters[buttonIndex] == 1; // DATABASE NO ROLE/special ability ASSIGNED YET
                  }
              else {
                 return votecounters[buttonIndex] > 0;
              }
             case PlayerDevice.Phone5:
              if (nightPhase){
-                return counters[buttonIndex] > 0; // player 5 can disable button if they're not deado
+                return counters[buttonIndex] > 0; // DATABASE NO ROLE/special ability ASSIGNED YET
                  }
              else {
                 return votecounters[buttonIndex] > 0;
              }
             case PlayerDevice.Phone6:
              if (nightPhase){
-                return counters[buttonIndex] >0; // Player 6 can reveal player's role
+                return counters[buttonIndex] >0; // DATABASE NO ROLE/special ability ASSIGNED YET
                  }
              else {
                 return votecounters[buttonIndex] > 0;
              }
             case PlayerDevice.Phone7:
              if (nightPhase){
-                return counters[buttonIndex] == 1; // Player 7 Villager
+                return counters[buttonIndex] == 1; // Wins if gets voted out
                  }
              else {
                 return votecounters[buttonIndex] > 0;
              }
             case PlayerDevice.Phone8:
              if (nightPhase){
-                return counters[buttonIndex] == 1; // Player 8 can reveal player's role
+                return counters[buttonIndex] > 0; // reduces player hp if alive
                  }
              else {
                 return votecounters[buttonIndex] > 0;
              }
             case PlayerDevice.Phone9:
              if (nightPhase){
-                return counters[buttonIndex] > 0; // Player 9 can can only decrease counter if it's > 0
+                return counters[buttonIndex] > 0; // Player 9 can only see alive player's roles 
                  }
              else {
                 return votecounters[buttonIndex] > 0;
@@ -390,22 +405,32 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
             if (view.IsMine && IsActionButtonEnabled(buttonIndex) && currentPlayerDevice != (PlayerDevice)buttonIndex && timeIsRunning && nightPhase)
             {
+                int displayID;
+                
                 switch (currentPlayerDevice)
                 {
                     case PlayerDevice.Phone1:
                         // BODYGUARD FT. FIREWALL
+                        if (optFirewall>0){
                         counters[buttonIndex]++;
+                        optFirewall--;
+                        }
                         break;
                     case PlayerDevice.Phone2:
                         // MEDIC FT. BACKUPFILE
+                        if (opgBackup>0){
                         counters[buttonIndex]++;
+                        opgBackup--;
+                        }
                         break;
                         
                     case PlayerDevice.Phone3:
                         // SEER FT. Network Monitoring TOOL
-
-                        int displayID = AcquireID(buttonIndex);
+                        if (optMonitor>0){
+                        displayID = AcquireID(buttonIndex);
                         ShowPlayerIDPanel(displayID); 
+                        optMonitor--;
+                        }
                         break;
                     /*VILLAGERS FT. DATABASES
                     case PlayerDevice.Phone4:
@@ -424,13 +449,18 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
                     case PlayerDevice.Phone8:
                        // WEREWOLF FT. VIRUS
+                        if (optVirus>0){
                         counters[buttonIndex]--;
+                        optVirus--;
+                        }
                         break;
 
                     case PlayerDevice.Phone9:
                         //Seer Wolf FT. SPYWARE
+                        if (optSpy > 0){
                         displayID = AcquireID(buttonIndex);
                         ShowPlayerIDPanel(displayID); 
+                        optSpy--;}
                         break;
 
                     /*case PlayerDevice.Phone10:
@@ -466,19 +496,19 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                 switch (currentPlayerDevice)
                 {
                     case PlayerDevice.Phone1:
-                        if (voteRemaining>=0){
+                        if (voteRemaining>0){
                         votecounters[buttonIndex]++;
                         voteRemaining--;
                         }
                         break;
                     case PlayerDevice.Phone2:
-                        if (voteRemaining>=0){
+                        if (voteRemaining>0){
                         votecounters[buttonIndex]++;
                          voteRemaining--;
                         }
                         break;
                     case PlayerDevice.Phone3:
-                        if (voteRemaining>=0){
+                        if (voteRemaining>0){
                         votecounters[buttonIndex]++;
                          voteRemaining--;
                         }
@@ -490,31 +520,31 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                         }
                         break;
                     case PlayerDevice.Phone5:
-                        if (voteRemaining>0){
+                        if (voteRemaining>=0){
                         votecounters[buttonIndex]++;
-                         voteRemaining--;
+                        voteRemaining--;
                         }
                         break;
                     case PlayerDevice.Phone6:
                         if (voteRemaining>=0){
                         votecounters[buttonIndex]++;
-                         voteRemaining--;
+                        voteRemaining--;
                         }
                         break;
                      case PlayerDevice.Phone7:
-                      if (voteRemaining>=0){
+                      if (voteRemaining>0){
                         votecounters[buttonIndex]++;
-                         voteRemaining--;
+                        voteRemaining--;
                         }
                         break;
                     case PlayerDevice.Phone8:
-                        if (voteRemaining>=0){
+                        if (voteRemaining>0){
                         votecounters[buttonIndex]++;
                          voteRemaining--;
                         }
                         break;
                     case PlayerDevice.Phone9:
-                        if (voteRemaining>=0){
+                        if (voteRemaining>0){
                         votecounters[buttonIndex]++;
                          voteRemaining--;
                         }
@@ -585,9 +615,9 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     return playerWithHighestVotes;
     }
 
-
-    //Codes for Quarantine Manager
 /*
+    //Codes for Quarantine Manager
+
     private List<int> disabledPlayers = new List<int>();
 
     private void DisableButton(int playerIdToDisable)
@@ -630,9 +660,16 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     //method to show player ID
     private void ShowPlayerIDPanel(int displayID){
         seerPanel.SetActive(true);
+
+        int playerID = GetPlayerIdForButton(displayID);
+        string roleEquivalent = GetRoleEquivalent(playerID);
+
+
         seerText.text = "Player Role ID: " + displayID;
         StartCoroutine(HidePlayerIDPanel(seerPanel));
     }
+
+
 
     private IEnumerator HidePlayerIDPanel(GameObject seerPanel)
     {
@@ -640,6 +677,33 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     seerPanel.SetActive(false);
     }
 
+    private string GetRoleEquivalent(int playerID)
+    {
+    switch (playerID)
+    {
+        case 0:
+            return "Firewall";
+        case 1:
+            return "Backup File";
+        case 2:
+            return "Network Monitor";
+        case 3:
+            return "Database";
+        case 4:
+            return "Database";
+        case 5:
+            return "Database";
+        case 6:
+            return "Phishing";
+        case 7:
+            return "Virus";
+        case 8:
+            return "Spyware";
+        // ... (add cases for other player IDs if needed)
+        default:
+            return "Unknown Role";
+    }
+    }
 
 
 
@@ -693,6 +757,78 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     return wormTargetPlayer != -1 && counters[playerButtonMap[wormTargetPlayer]] > 0;
 }
 */
+
+
+    public void OpenFirewall()
+    {
+        firewallPanel.SetActive(true);
+        backupPanel.SetActive(false);
+        networkPanel.SetActive(false);
+        dataPanel.SetActive(false);
+        virusPanel.SetActive(false);
+        phishingPanel.SetActive(false);
+        spywarePanel.SetActive(false);
+    }
+     public void OpenBackup()
+    {
+        firewallPanel.SetActive(false);
+        backupPanel.SetActive(true);
+        networkPanel.SetActive(false);
+        dataPanel.SetActive(false);
+        virusPanel.SetActive(false);
+        phishingPanel.SetActive(false);
+        spywarePanel.SetActive(false);
+    }
+     public void OpenNetwork()
+    {
+        firewallPanel.SetActive(false);
+        backupPanel.SetActive(false);
+        networkPanel.SetActive(true);
+        dataPanel.SetActive(false);
+        virusPanel.SetActive(false);
+        phishingPanel.SetActive(false);
+        spywarePanel.SetActive(false);
+    }
+     public void OpenData()
+    {
+        firewallPanel.SetActive(false);
+        backupPanel.SetActive(false);
+        networkPanel.SetActive(false);
+        dataPanel.SetActive(true);
+        virusPanel.SetActive(false);
+        phishingPanel.SetActive(false);
+        spywarePanel.SetActive(false);
+    }
+     public void OpenVirus()
+    {
+        firewallPanel.SetActive(false);
+        backupPanel.SetActive(false);
+        networkPanel.SetActive(false);
+        dataPanel.SetActive(false);
+        virusPanel.SetActive(true);
+        phishingPanel.SetActive(false);
+        spywarePanel.SetActive(false);
+    }
+     public void OpenPhishing()
+    {
+        firewallPanel.SetActive(false);
+        backupPanel.SetActive(false);
+        networkPanel.SetActive(false);
+        dataPanel.SetActive(false);
+        virusPanel.SetActive(false);
+        phishingPanel.SetActive(true);
+        spywarePanel.SetActive(false);
+    }
+         public void OpenSpyware()
+    {
+        firewallPanel.SetActive(false);
+        backupPanel.SetActive(false);
+        networkPanel.SetActive(false);
+        dataPanel.SetActive(false);
+        virusPanel.SetActive(false);
+        phishingPanel.SetActive(false);
+        spywarePanel.SetActive(true);
+    }
 
 
 }
