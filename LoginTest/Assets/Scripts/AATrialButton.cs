@@ -665,7 +665,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         string roleEquivalent = GetRoleEquivalent(playerID);
 
 
-        seerText.text = "Player Role ID: " + displayID;
+        seerText.text = "Player Role ID: " + roleEquivalent;
         StartCoroutine(HidePlayerIDPanel(seerPanel));
     }
 
