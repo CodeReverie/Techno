@@ -35,6 +35,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     public bool nightPhase = true;
     public bool gameIsRunning = true;
     public string roleEquivalent;
+    public string roleDescription;
     public int voteRemaining = 1;
     public bool firstNightPhase = true;
     //once per turn and once per game
@@ -141,21 +142,25 @@ public class AATrialButton : MonoBehaviourPunCallbacks
             switch (roleText){    
             case "0" :
               roleEquivalent = "Firewall";
+              roleDescription = "You can protect 1 player from being attacked each night";
               OpenFirewall();
                 break;
 
             case "1" :
                roleEquivalent = "Backup FIle";
+               roleDescription = "You can revive one player at night. You can only use this once";
                OpenBackup();
                 break;
                      
             case "2" :
               roleEquivalent = "Network Monitor";
+              roleDescription = "You can reveal 1 player role each night";
               OpenNetwork();
                 break;
 
             case "3" :
               roleEquivalent = "Database";
+
               OpenData();
                 break;
 
@@ -655,9 +660,16 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     //method to show player ID
     private void ShowPlayerIDPanel(int displayID){
         seerPanel.SetActive(true);
+
+        int playerID = GetPlayerIdForButton(displayID);
+        string roleEquivalent = GetRoleEquivalent(playerID);
+
+
         seerText.text = "Player Role ID: " + displayID;
         StartCoroutine(HidePlayerIDPanel(seerPanel));
     }
+
+
 
     private IEnumerator HidePlayerIDPanel(GameObject seerPanel)
     {
@@ -665,6 +677,33 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     seerPanel.SetActive(false);
     }
 
+    private string GetRoleEquivalent(int playerID)
+    {
+    switch (playerID)
+    {
+        case 0:
+            return "Firewall";
+        case 1:
+            return "Backup File";
+        case 2:
+            return "Network Monitor";
+        case 3:
+            return "Database";
+        case 4:
+            return "Database";
+        case 5:
+            return "Database";
+        case 6:
+            return "Phishing";
+        case 7:
+            return "Virus";
+        case 8:
+            return "Spyware";
+        // ... (add cases for other player IDs if needed)
+        default:
+            return "Unknown Role";
+    }
+    }
 
 
 

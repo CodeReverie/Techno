@@ -18207,6 +18207,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 505776936}
     - target: {fileID: 514469182578040005, guid: f6912aa831b708448923f3edd1a6fd63, type: 3}
+      propertyPath: roleEquivalent
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 514469182578040005, guid: f6912aa831b708448923f3edd1a6fd63, type: 3}
       propertyPath: roleTextElement
       value: 
       objectReference: {fileID: 1522337341}
