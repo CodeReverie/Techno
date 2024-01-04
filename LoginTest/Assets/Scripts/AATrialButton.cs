@@ -84,6 +84,9 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
         // Life Counters
         List<int> availableButtonIndices = new List<int>();
+         List<int> availableButtonIndices1 = new List<int>();
+
+
         for (int i = 0; i < numberTexts.Length; i++)
         {
             availableButtonIndices.Add(i);
@@ -95,7 +98,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         voteButtons = new Button[voteTexts.Length];
         for (int i = 0; i < voteTexts.Length; i++)
         {
-            availableButtonIndices.Add(i);
+            availableButtonIndices1.Add(i);
             votecounters[i] = 1;
             voteTexts[i].text = votecounters[i].ToString();
             voteButtons[i] = playerButtons[i];
@@ -104,12 +107,20 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         //Number of Players with buttons of course 
         for (int i = 1; i <= 9; i++)
         {
+            if (availableButtonIndices.Count > 0){
             int randomButtonIndex = Random.Range(0, availableButtonIndices.Count);
             int playerID = i; // Adjust this if your player IDs don't start from 1
             int buttonIndex = availableButtonIndices[randomButtonIndex];
 
             playerButtonMap.Add(playerID, buttonIndex);
             availableButtonIndices.RemoveAt(randomButtonIndex);
+            }
+            else
+            {
+                // Handle the case where there are not enough available buttons
+                Debug.LogError("Not enough available buttons for player assignment.");
+                break; // Exit the loop or handle the situation accordingly
+            }
         }
 
         // Player POV and assign roles
@@ -290,11 +301,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                 }
                 firstNightPhase = false; 
             }
-                /*if (CheckWormVictory())
-                {
-                    Debug.Log("Player 11 (Worm) has won!");
-                    // Handle Worm's victory here
-                }*/
+ 
             }
         }
 
@@ -372,27 +379,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
              else {
                 return votecounters[buttonIndex] > 0;
              }
-            /*case PlayerDevice.Phone10:
-             if (nightPhase){
-                return counters[buttonIndex] == 1; // Player 10 Villager
-                 }
-             else {
-                return votecounters[buttonIndex] > 0;
-             }
-            case PlayerDevice.Phone11:
-             if (nightPhase){
-                return counters[buttonIndex] == 1; // Player 11 Villager
-                 }
-             else {
-                return votecounters[buttonIndex] > 0;
-             }
-            case PlayerDevice.Phone12:
-             if (nightPhase){
-                return counters[buttonIndex] == 1; // Player 12 Villager
-             }
-             else {
-                return votecounters[buttonIndex] > 0;
-             }*/
+
             default:
                 return false;     
         }
@@ -400,6 +387,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
     public void OnButtonPress(int buttonIndex)
     {
+        
         if (PhotonNetwork.IsConnected)
         {
 
@@ -427,25 +415,12 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                     case PlayerDevice.Phone3:
                         // SEER FT. Network Monitoring TOOL
                         if (optMonitor>0){
-                        displayID = AcquireID(buttonIndex);
-                        ShowPlayerIDPanel(displayID); 
-                        optMonitor--;
+                            PlayerDevice targetPlayerDevice = AcquireDevice(buttonIndex);
+                            ShowPlayerIDPanel(targetPlayerDevice);
+                            optMonitor--;
                         }
                         break;
-                    /*VILLAGERS FT. DATABASES
-                    case PlayerDevice.Phone4:
-                        break;
-                    case PlayerDevice.Phone5: 
-                        break;
-                    case PlayerDevice.Phone6:
-                        break;
-                    */
-                   /*  JESTER FT. PHISHING
-                    case PlayerDevice.Phone7:
-                        JESTER FT. PHISHING
-                        counters[buttonIndex]++;
-                        break;
-                    */
+
 
                     case PlayerDevice.Phone8:
                        // WEREWOLF FT. VIRUS
@@ -458,34 +433,10 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                     case PlayerDevice.Phone9:
                         //Seer Wolf FT. SPYWARE
                         if (optSpy > 0){
-                        displayID = AcquireID(buttonIndex);
-                        ShowPlayerIDPanel(displayID); 
-                        optSpy--;}
+                            PlayerDevice targetPlayerDevice = AcquireDevice(buttonIndex);
+                            ShowPlayerIDPanel(targetPlayerDevice);
+                            optSpy--;}
                         break;
-
-                    /*case PlayerDevice.Phone10:
-                       // JAILER FT. QUARANTINE MANAGER
-                        // Determine the player ID associated with the pressed button
-                        int playerIdToDisable = GetPlayerIdForButton(buttonIndex);
-                        // Disable the button for the associated player
-                        DisableButton(playerIdToDisable);
-                        counters[buttonIndex]= -5;
-                    break;
-                    case PlayerDevice.Phone11:
-                            //Douser FT. WORM 
-                        if (wormTargetPlayer == -1)
-                            {
-                                wormTargetPlayer = GetPlayerIdForButton(buttonIndex);
-                                // Place the counter for the selected player
-                                counters[buttonIndex]++;
-                                // Notify all players about the life increase
-                                view.RPC("UpdateCount", RpcTarget.All, buttonIndex, counters[buttonIndex]);
-                            }
-                    break;
-                    case PlayerDevice.Phone12:
-                    break;
-                    */
-
 
                 }
                 view.RPC("UpdateCount", RpcTarget.All, buttonIndex, counters[buttonIndex]);
@@ -549,29 +500,16 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                          voteRemaining--;
                         }
                         break;   
-                  /*  case PlayerDevice.Phone10:
-                        if (voteRemaining>=0){
-                        votecounters[buttonIndex]++;
-                         voteRemaining--;
-                        }
-                        break;
-                    case PlayerDevice.Phone11:
-                        if (voteRemaining>=0){
-                        votecounters[buttonIndex]++;
-                         voteRemaining--;
-                        }
-                        break;  
-                    case PlayerDevice.Phone12:
-                        if (voteRemaining>=0){
-                        votecounters[buttonIndex]++;
-                         voteRemaining--;
-                        }
-                        break;  */      
+                   
                 }
                 view.RPC("UpdateVoteCount", RpcTarget.All, buttonIndex, votecounters[buttonIndex]);
             }
         }
-       
+                Debug.Log($"IsActionButtonEnabled: {IsActionButtonEnabled(buttonIndex)}");
+                Debug.Log($"currentPlayerDevice: {currentPlayerDevice}");
+                Debug.Log($"Clicked button assigned to: {(PlayerDevice)buttonIndex}");
+                Debug.Log($"timeIsRunning: {timeIsRunning}");
+                Debug.Log($"nightPhase: {nightPhase}"); 
 
     }
 
@@ -615,59 +553,20 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     return playerWithHighestVotes;
     }
 
-/*
-    //Codes for Quarantine Manager
 
-    private List<int> disabledPlayers = new List<int>();
-
-    private void DisableButton(int playerIdToDisable)
-    {
-    // Check if the player is not already disabled
-    if (!disabledPlayers.Contains(playerIdToDisable))
-        {
-        foreach (var kvp in playerButtonMap)
-            {
-            int playerID = kvp.Key;
-            int buttonIndex = kvp.Value;
-
-            if (playerID == playerIdToDisable)
-            {
-                // Disable the button associated with the specified player ID
-                if (buttonIndex >= 0 && buttonIndex < playerButtons.Length)
-                {
-                    playerButtons[buttonIndex].interactable = false;
-                    Debug.Log($"Disabled button for player ID {playerIdToDisable}");
-                }
-                else
-                {
-                    Debug.LogError($"Invalid button index for player ID {playerIdToDisable}");
-                }
-
-                // Add the disabled player to the list
-                disabledPlayers.Add(playerIdToDisable);
-                break;
-                }
-            }
-        }
-    }
-    private void ResetDisabledPlayers()
-{
-    disabledPlayers.Clear();
-}
-*/
 
 
     //method to show player ID
-    private void ShowPlayerIDPanel(int displayID){
-        seerPanel.SetActive(true);
+    private void ShowPlayerIDPanel(PlayerDevice targetPlayerDevice)
+{
+    seerPanel.SetActive(true);
 
-        int playerID = GetPlayerIdForButton(displayID);
-        string roleEquivalent = GetRoleEquivalent(playerID);
+    string roleEquivalent = GetRoleEquivalent(targetPlayerDevice);
 
+    seerText.text = "Player Role: " + roleEquivalent;
+    StartCoroutine(HidePlayerIDPanel(seerPanel));
+}
 
-        seerText.text = "Player Role ID: " + roleEquivalent;
-        StartCoroutine(HidePlayerIDPanel(seerPanel));
-    }
 
 
 
@@ -677,33 +576,33 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     seerPanel.SetActive(false);
     }
 
-    private string GetRoleEquivalent(int playerID)
+   private string GetRoleEquivalent(PlayerDevice playerDevice)
+{
+    switch (playerDevice)
     {
-    switch (playerID)
-    {
-        case 0:
+        case PlayerDevice.Phone1:
             return "Firewall";
-        case 1:
+        case PlayerDevice.Phone2:
             return "Backup File";
-        case 2:
+        case PlayerDevice.Phone3:
             return "Network Monitor";
-        case 3:
+        case PlayerDevice.Phone4:
             return "Database";
-        case 4:
+        case PlayerDevice.Phone5:
             return "Database";
-        case 5:
+        case PlayerDevice.Phone6:
             return "Database";
-        case 6:
+        case PlayerDevice.Phone7:
             return "Phishing";
-        case 7:
+        case PlayerDevice.Phone8:
             return "Virus";
-        case 8:
+        case PlayerDevice.Phone9:
             return "Spyware";
-        // ... (add cases for other player IDs if needed)
+        // ... (add cases for other player devices if needed)
         default:
             return "Unknown Role";
     }
-    }
+}
 
 
 
@@ -721,43 +620,20 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
         return -1; // Return -1 if the button index is not found 
     }
-    private int AcquireID(int buttonIndex)
+    private PlayerDevice AcquireDevice(int buttonIndex)
     {
-        foreach (var kvp in playerButtonMap)
-        {
-            if (kvp.Value == buttonIndex)
-            {
-                return kvp.Key;
-            }
-        }
-
-        return -1; // Return -1 if the button index is not found 
-    }
-    //Codes for Worm
-/*
-    private bool CheckWormVictory()
-{
-    // Check if all players who have life counters also have a Worm counter
     foreach (var kvp in playerButtonMap)
     {
-        int playerID = kvp.Key;
-        int buttonIndex = kvp.Value;
-
-        if (counters[buttonIndex] > 0 && playerID != 11) // Skip Worm's own counter
+        if (kvp.Value == buttonIndex)
         {
-            // Check if the player has a Worm counter
-            if (counters[buttonIndex] == 0)
-            {
-                return false; // Found a player without a Worm counter
-            }
+            return (PlayerDevice)kvp.Key;
         }
     }
 
-    // Check if the Worm has placed a counter on each player with a life counter
-    return wormTargetPlayer != -1 && counters[playerButtonMap[wormTargetPlayer]] > 0;
-}
-*/
+    return PlayerDevice.Phone1; // Return a default value if the button index is not found 
+    }
 
+  
 
     public void OpenFirewall()
     {

@@ -18309,7 +18309,7 @@ PrefabInstance:
     - target: {fileID: 514469182578040005, guid: f6912aa831b708448923f3edd1a6fd63, type: 3}
       propertyPath: numberTexts.Array.data[9]
       value: 
-      objectReference: {fileID: 962282859}
+      objectReference: {fileID: 2135477503}
     - target: {fileID: 514469182578040005, guid: f6912aa831b708448923f3edd1a6fd63, type: 3}
       propertyPath: numberTexts.Array.data[10]
       value: 
