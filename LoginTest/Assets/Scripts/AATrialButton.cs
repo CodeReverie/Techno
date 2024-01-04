@@ -44,6 +44,8 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     public int optMonitor =1;
     public int optVirus =1;
     public int optSpy =1;
+
+    
     
 
 
@@ -59,9 +61,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         Phone7,
         Phone8,
         Phone9
-        /*Phone10,
-        Phone11,
-        Phone12*/
+       
     }
     
     void Start()
@@ -171,32 +171,38 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
             case "3" :
               roleEquivalent = "Database";
+              roleDescription = "You can vote twice";
 
               OpenData();
                 break;
 
             case "4" :
               roleEquivalent = "Database";
+              roleDescription = "You can vote twice";
               OpenData();
                 break;
 
             case "5" :
                 roleEquivalent = "Database";
+                roleDescription = "You can vote twice";
                 OpenData();
                 break;
 
             case "6" :
                 roleEquivalent = "Phishing";
+                roleDescription = "You win if you get voted out";
                 OpenPhishing();
                 break;
 
             case "7" :
                 roleEquivalent = "Virus";
+                roleDescription = "Kill every other player to win";
                 OpenVirus();
                 break;
 
             case "8" :
                 roleEquivalent =  "Spyware";
+                roleDescription = "Your goal is to help virus and win";
                 OpenSpyware();
                 break;
                 }
@@ -393,7 +399,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
             if (view.IsMine && IsActionButtonEnabled(buttonIndex) && currentPlayerDevice != (PlayerDevice)buttonIndex && timeIsRunning && nightPhase)
             {
-                int displayID;
+                
                 
                 switch (currentPlayerDevice)
                 {
@@ -455,7 +461,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                     case PlayerDevice.Phone2:
                         if (voteRemaining>0){
                         votecounters[buttonIndex]++;
-                         voteRemaining--;
+                        voteRemaining--;
                         }
                         break;
                     case PlayerDevice.Phone3:
@@ -504,13 +510,9 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                 }
                 view.RPC("UpdateVoteCount", RpcTarget.All, buttonIndex, votecounters[buttonIndex]);
             }
-        }
-                Debug.Log($"IsActionButtonEnabled: {IsActionButtonEnabled(buttonIndex)}");
+        }     
                 Debug.Log($"currentPlayerDevice: {currentPlayerDevice}");
                 Debug.Log($"Clicked button assigned to: {(PlayerDevice)buttonIndex}");
-                Debug.Log($"timeIsRunning: {timeIsRunning}");
-                Debug.Log($"nightPhase: {nightPhase}"); 
-
     }
 
   public void UpdateVoteCount(int buttonIndex, int newVoteCounter)
@@ -519,7 +521,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         voteTexts[buttonIndex].text = newVoteCounter.ToString();
     }
 
-
+    //update to all players
     [PunRPC]
     private void UpdateCount(int buttonIndex, int newCounter)
     {
@@ -629,6 +631,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
             return (PlayerDevice)kvp.Key;
         }
     }
+   
 
     return PlayerDevice.Phone1; // Return a default value if the button index is not found 
     }
