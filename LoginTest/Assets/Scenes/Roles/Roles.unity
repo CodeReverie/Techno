@@ -5318,10 +5318,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Network Monitoring tool is like a security camera system for a computer
-    network. It supervise the network's activity, helps identify any abnormal behavior,
-    and provides valuable information to ensure the network is functioning properly.
-    It can also help identify security threats, such as unauthorized access attempts
+  m_text: A Database is like a cabinet. Where you store your items or data inside.
+    This allows to easily find,  and manage information.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -7124,10 +7122,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Network Monitoring tool is like a security camera system for a computer
-    network. It supervise the network's activity, helps identify any abnormal behavior,
-    and provides valuable information to ensure the network is functioning properly.
-    It can also help identify security threats, such as unauthorized access attempts
+  m_text: 'Spyware is like a digital spy on your device. It''s a threat that secretly
+    monitor and gather information without your knowledge and then sending the information
+    to someone else. '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -16501,10 +16498,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Network Monitoring tool is like a security camera system for a computer
-    network. It supervise the network's activity, helps identify any abnormal behavior,
-    and provides valuable information to ensure the network is functioning properly.
-    It can also help identify security threats, such as unauthorized access attempts
+  m_text: A Technique involves attempting to trick people into reavealing or to acquire
+    sensitive data by posing as a trustworthy source.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
