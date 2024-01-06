@@ -18813,6 +18813,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 559221341}
     - target: {fileID: 514469182578040005, guid: f6912aa831b708448923f3edd1a6fd63, type: 3}
+      propertyPath: CyberTWin
+      value: 
+      objectReference: {fileID: 1647631334}
+    - target: {fileID: 514469182578040005, guid: f6912aa831b708448923f3edd1a6fd63, type: 3}
       propertyPath: PhaseText
       value: 
       objectReference: {fileID: 793984913}
@@ -18832,6 +18836,14 @@ PrefabInstance:
       propertyPath: virusPanel
       value: 
       objectReference: {fileID: 1915549477}
+    - target: {fileID: 514469182578040005, guid: f6912aa831b708448923f3edd1a6fd63, type: 3}
+      propertyPath: NetworkTWin
+      value: 
+      objectReference: {fileID: 1781362502}
+    - target: {fileID: 514469182578040005, guid: f6912aa831b708448923f3edd1a6fd63, type: 3}
+      propertyPath: PhishingWin
+      value: 
+      objectReference: {fileID: 882150277}
     - target: {fileID: 514469182578040005, guid: f6912aa831b708448923f3edd1a6fd63, type: 3}
       propertyPath: backupPanel
       value: 

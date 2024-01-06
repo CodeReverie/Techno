@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,8 +13,10 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     public TextMeshProUGUI[] numberTexts;
     public TextMeshProUGUI[] voteTexts;
     public GameObject rolePanel,seerPanel;
-    public GameObject firewallPanel, backupPanel, networkPanel, dataPanel, virusPanel, phishingPanel, spywarePanel;
+    public GameObject firewallPanel, backupPanel, networkPanel, dataPanel, virusPanel, phishingPanel, spywarePanel, CyberTWin, NetworkTWin, PhishingWin;
     public TextMeshProUGUI roleTextElement,seerText;
+
+   
    
     private int[] counters;
     private PhotonView view;
@@ -80,6 +83,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         playerButtonMap = new Dictionary<int, int>();
         playerButtons = new Button[numberTexts.Length];
         voteButtons = new Button[voteTexts.Length];
+           
        
 
         // Life Counters
@@ -276,12 +280,12 @@ public class AATrialButton : MonoBehaviourPunCallbacks
             optMonitor =1;
             optSpy =1;
             optVirus =1; 
-            // Reset vote counts to 0 at the beginning of each day phase
+            // Reset vote counts to 0 at the beginning of each day phase    
             for (int i = 0; i < votecounters.Length; i++)
             {
-            votecounters[i] = 1;
+                votecounters[i] = 1;
             
-            view.RPC("UpdateVoteCount", RpcTarget.All, i, 1);
+                view.RPC("UpdateVoteCount", RpcTarget.All, i, 1);
             }
              //ResetDisabledPlayers();
         }
@@ -301,28 +305,97 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                 }
                 // Reduce the life of the player with the highest votes to 0
                 else{
-                    counters[playerButtonMap[playerToEliminate]] -= 10;
+                    counters[playerButtonMap[playerToEliminate]] = 0;
+                    if (playerToEliminate==7){
+                        Debug.Log($"You have been scammed by Phishing, he wins");
+                        PhishingWin.SetActive(true);
+                        StartCoroutine(Quit());
+                    }
+                    Debug.Log($"Player {playerToEliminate} is dead!");
+                   
                     // Notify all players about the life reduction
                     view.RPC("UpdateCount", RpcTarget.All, playerButtonMap[playerToEliminate], 0);
+                    WinCondition();
+                    
                 }
                 firstNightPhase = false; 
             }
  
             }
         }
+      
 
         nightPhase = !nightPhase; // Switch the phase
+        
     }
 //timer end
 
+public void WinCondition()
+{
+    int NetworkLeft = 6;
+    int ThreatLeft = 2;
+    bool PhishingDead = false;
 
+    for (int i = 6; i >= 1; i--)
+    {
+        int playerID = GetPlayerIdForButton(i);
+        
+        if (playerID != -1 && playerButtonMap.ContainsKey(playerID) && counters[playerButtonMap[playerID]] == 0)
+        {
+            NetworkLeft--;
+        }
+    }
+
+    for (int i = 9; i >= 8; i--)
+    {
+        int playerID = GetPlayerIdForButton(i);
+        
+        if (playerID != -1 && playerButtonMap.ContainsKey(playerID) && counters[playerButtonMap[playerID]] == 0)
+        {
+            ThreatLeft--;
+        }
+    }
+
+    // Check for Player 7 (Phishing)
+    int phishingPlayerID = GetPlayerIdForButton(7);
+    if (phishingPlayerID != -1 && playerButtonMap.ContainsKey(phishingPlayerID) && counters[playerButtonMap[phishingPlayerID]] == 0)
+    {
+        Debug.Log($"You have been scammed by Phishing, he wins");
+        PhishingDead = true;
+
+        return;  // Phishing wins, no need to check other conditions
+    }
+
+    // Check win conditions for Cybersecurity Threats and Network Tools
+    if (NetworkLeft <= ThreatLeft && PhishingDead)
+    {
+        Debug.Log($"Cybersecurity Threats win");
+        CyberTWin.SetActive(true);
+        StartCoroutine(Quit());
+
+    }
+
+    if (ThreatLeft == 0 && PhishingDead)
+    {
+        Debug.Log($"Networking Tools win");
+        NetworkTWin.SetActive(true);
+        StartCoroutine(Quit());
+        
+    }
+}
 
     private bool IsActionButtonEnabled(int buttonIndex)
     {
+        int playerID = GetPlayerIdForButton(buttonIndex);
+        if (counters[playerButtonMap[playerID]]==0){
+            return false;
+        }
+          
         //Conditions to click other players
         switch (currentPlayerDevice)
         {
             case PlayerDevice.Phone1:
+            
              if (nightPhase){
                 return counters[buttonIndex] > 0; // Player 1 can only decrease counter if it's > 0
              }
@@ -393,6 +466,10 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
     public void OnButtonPress(int buttonIndex)
     {
+        int playerID = GetPlayerIdForButton(buttonIndex);
+        if (counters[playerButtonMap[playerID]]==0){
+            return;
+        }
         
         if (PhotonNetwork.IsConnected)
         {
@@ -405,11 +482,13 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                 {
                     case PlayerDevice.Phone1:
                         // BODYGUARD FT. FIREWALL
+                        
                         if (optFirewall>0){
                         counters[buttonIndex]++;
                         optFirewall--;
                         }
                         break;
+                        
                     case PlayerDevice.Phone2:
                         // MEDIC FT. BACKUPFILE
                         if (opgBackup>0){
@@ -607,8 +686,6 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 }
 
 
-
-
     // method to get the player ID associated with a button index
     private int GetPlayerIdForButton(int buttonIndex)
     {
@@ -622,6 +699,9 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
         return -1; // Return -1 if the button index is not found 
     }
+
+
+
     private PlayerDevice AcquireDevice(int buttonIndex)
     {
     foreach (var kvp in playerButtonMap)
@@ -631,12 +711,11 @@ public class AATrialButton : MonoBehaviourPunCallbacks
             return (PlayerDevice)kvp.Key;
         }
     }
-   
 
     return PlayerDevice.Phone1; // Return a default value if the button index is not found 
     }
-
-  
+    
+    
 
     public void OpenFirewall()
     {
@@ -709,7 +788,20 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         spywarePanel.SetActive(true);
     }
 
+     
+        
+
+    public IEnumerator Quit()
+    {
+        yield return new WaitForSeconds(5f); 
+        // Check if connected to Photon before loading the scene
+        if (PhotonNetwork.IsConnected)
+        {
+            // Disconnect from Photon
+            PhotonNetwork.Disconnect();
+        }
+        // Load the scene
+        SceneManager.LoadScene("FirebaseAuth");
+    }
 
 }
-
-
