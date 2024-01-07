@@ -5,9 +5,6 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Scenes/FirebaseAuth.unity
     guid: 3fc8acdd13e6c734bafef6554d6fdbcd
@@ -23,9 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LoadingScreen.unity
     guid: ea17b66284ec4e34a809aed8cbe6b7ea
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/Roles/Roles.unity
+    guid: aede653df0b69db4d8a53ca9d8076aa5
   - enabled: 1
     path: Assets/Scenes/ITEMSHOP.unity
     guid: b016c2025af38614b8dee7ee7f76ab47
