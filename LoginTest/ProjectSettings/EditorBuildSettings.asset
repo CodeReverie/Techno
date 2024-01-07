@@ -23,9 +23,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LoadingScreen.unity
     guid: ea17b66284ec4e34a809aed8cbe6b7ea
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Scenes/Roles/Roles.unity
-    guid: 885bb80251190e14fb8a44c0937a7ed9
+    path: Assets/Scenes/ITEMSHOP.unity
+    guid: b016c2025af38614b8dee7ee7f76ab47
   - enabled: 1
     path: Assets/Scenes/Game.unity
     guid: ea3b5a637c91e71429c6ac9001c70d68
