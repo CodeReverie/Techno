@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+
 public class Transaction : MonoBehaviour
 {
     public TextMeshProUGUI freemoGems, byteCoin;
@@ -10,8 +11,6 @@ public class Transaction : MonoBehaviour
     
     public int freemoValue = 0;
     public int byteValue = 0;
-
-    
 
 
     public void OnFreemo1ButtonPress()
@@ -186,13 +185,6 @@ public class Transaction : MonoBehaviour
         purchased12=true;}
         }
     }
-    
-
-
-
-
-
-
 
     void UpdateUIText()
     {
@@ -200,4 +192,9 @@ public class Transaction : MonoBehaviour
         freemoGems.text = freemoValue.ToString();
         byteCoin.text = byteValue.ToString();
     }
+
+
+
+    public static Transaction transaction;
+    
 }
