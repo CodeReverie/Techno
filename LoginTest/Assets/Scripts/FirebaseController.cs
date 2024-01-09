@@ -296,10 +296,10 @@ public class FirebaseController : MonoBehaviour
             message = "Missing Password";
             break;
         case AuthError.WeakPassword:
-            message = "Is your password goku? Cause it's weak";
+            message = "Password is too weak.";
             break;
         case AuthError.WrongPassword:
-            message = "Wrong Password, fool";
+            message = "Wrong Password";
             break;
         case AuthError.EmailAlreadyInUse:
             message = "Email is already taken";
