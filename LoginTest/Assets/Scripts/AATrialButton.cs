@@ -379,7 +379,7 @@ public void WinCondition()
     }
 
     // Check win conditions for Cybersecurity Threats and Network Tools
-    if (NetworkLeft <= ThreatLeft && PhishingDead)
+    if (NetworkLeft <= ThreatLeft /*&& PhishingDead*/)
     {
         Debug.Log($"Cybersecurity Threats win");
         CyberTWin.SetActive(true);
@@ -387,7 +387,7 @@ public void WinCondition()
 
     }
 
-    if (ThreatLeft == 0 && PhishingDead)
+    if (ThreatLeft == 0 /*&& PhishingDead*/)
     {
         Debug.Log($"Networking Tools win");
         NetworkTWin.SetActive(true);
