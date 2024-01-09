@@ -15,22 +15,22 @@ public class Transaction : MonoBehaviour
 
     public void OnFreemo1ButtonPress()
     {
-        freemoValue += 20;
+        freemoValue += 50;
         UpdateUIText();
     }
      public void OnFreemo2ButtonPress()
     {
-        freemoValue += 50;
+        freemoValue += 150;
         UpdateUIText();
     }
      public void OnFreemo3ButtonPress()
     {
-        freemoValue += 100;
+        freemoValue += 400;
         UpdateUIText();
     }
      public void OnFreemo4ButtonPress()
     {
-        freemoValue += 200;
+        freemoValue += 1000;
         UpdateUIText();
     }
 //================================================================
