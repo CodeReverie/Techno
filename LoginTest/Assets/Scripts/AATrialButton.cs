@@ -109,7 +109,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         }
 
         //Number of Players with buttons of course 
-        for (int i = 1; i <= 9; i++)
+        /*for (int i = 1; i <= 9; i++)
         {
             if (availableButtonIndices.Count > 0){
             int randomButtonIndex = Random.Range(0, availableButtonIndices.Count);
@@ -125,6 +125,18 @@ public class AATrialButton : MonoBehaviourPunCallbacks
                 Debug.LogError("Not enough available buttons for player assignment.");
                 break; // Exit the loop or handle the situation accordingly
             }
+        }*/
+        if (availableButtonIndices.Count < 9) {
+        Debug.LogError("Not enough available buttons for player assignment.");
+        }   else {
+            for (int i = 0; i < 9; i++) {
+                int playerID = i + 1; // Adjust this if your player IDs don't start from 1
+                int buttonIndex = availableButtonIndices[i];
+
+                playerButtonMap.Add(playerID, buttonIndex);
+            }
+                // Clear the available buttons list since all buttons are assigned
+                availableButtonIndices.Clear();
         }
 
         // Player POV and assign roles
