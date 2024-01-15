@@ -31,7 +31,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
     
     
     //timer variables
-    public float timeRemaining = 120;
+    public float timeRemaining = 30;
     public bool timeIsRunning = true;
     public TMP_Text timeText;
     public TMP_Text PhaseText;
@@ -72,7 +72,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         //timer
         timeIsRunning = true;
         nightPhase = false;
-        timeRemaining = 5; 
+        timeRemaining = 10; 
         firstNightPhase = true; 
 
         view = GetComponent<PhotonView>();
@@ -88,7 +88,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
         // Life Counters
         List<int> availableButtonIndices = new List<int>();
-         List<int> availableButtonIndices1 = new List<int>();
+        List<int> availableButtonIndices1 = new List<int>();
 
 
         for (int i = 0; i < numberTexts.Length; i++)
@@ -130,7 +130,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         Debug.LogError("Not enough available buttons for player assignment.");
         }   else {
             for (int i = 0; i < 9; i++) {
-                int playerID = i + 1; // Adjust this if your player IDs don't start from 1
+                int playerID = i +1 ; // Adjust this if your player IDs don't start from 1
                 int buttonIndex = availableButtonIndices[i];
 
                 playerButtonMap.Add(playerID, buttonIndex);
@@ -230,7 +230,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
         }
         
         private IEnumerator HideRolePanel(GameObject rolePanel){
-                yield return new WaitForSeconds(5f); // Adjust the delay as needed
+                yield return new WaitForSeconds(3f); // Adjust the delay as needed
                 rolePanel.SetActive(false);
         }
 
@@ -286,7 +286,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
         if (newPhase == "Day Phase")
         {
-            timeRemaining = 5;
+            timeRemaining = 30;
             voteRemaining = 1;
             optFirewall =1; 
             optMonitor =1;
@@ -304,7 +304,7 @@ public class AATrialButton : MonoBehaviourPunCallbacks
 
         else if (newPhase == "Night Phase")
         {
-            timeRemaining = 5;
+            timeRemaining = 30;
             if (PhotonNetwork.IsConnected && view.IsMine)
             {
             int playerToEliminate = GetPlayerWithHighestVotes();
@@ -387,7 +387,7 @@ public void WinCondition()
 
     }
 
-    if (ThreatLeft == 0 /*&& PhishingDead*/)
+    if (ThreatLeft <= 0 /*&& PhishingDead*/)
     {
         Debug.Log($"Networking Tools win");
         NetworkTWin.SetActive(true);
